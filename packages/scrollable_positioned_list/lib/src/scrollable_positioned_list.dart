@@ -51,6 +51,7 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addSemanticIndexes = true,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
+    this.shrinkWrap = false,
     this.minCacheExtent,
   })  : assert(itemCount != null),
         assert(itemBuilder != null),
@@ -77,6 +78,7 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addSemanticIndexes = true,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
+    this.shrinkWrap = false,
     this.minCacheExtent,
   })  : assert(itemCount != null),
         assert(itemBuilder != null),
@@ -150,6 +152,8 @@ class ScrollablePositionedList extends StatefulWidget {
   ///
   /// See [SliverChildBuilderDelegate.addRepaintBoundaries].
   final bool addRepaintBoundaries;
+
+  final bool shrinkWrap;
 
   /// The minimum cache extent used by the underlying scroll lists.
   /// See [ScrollView.cacheExtent].
@@ -317,6 +321,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
                     padding: widget.padding,
                     addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
                     addRepaintBoundaries: widget.addRepaintBoundaries,
+                    shrinkWrap: widget.shrinkWrap,
                   ),
                 ),
               ),
@@ -348,6 +353,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
                         padding: widget.padding,
                         addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
                         addRepaintBoundaries: widget.addRepaintBoundaries,
+                        shrinkWrap: widget.shrinkWrap,
                       ),
                     ),
                   ),

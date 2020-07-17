@@ -43,6 +43,7 @@ class PositionedList extends StatefulWidget {
     this.addSemanticIndexes = true,
     this.addRepaintBoundaries = true,
     this.addAutomaticKeepAlives = true,
+    this.shrinkWrap = false,
   })  : assert(itemCount != null),
         assert(itemBuilder != null),
         assert((positionedIndex == 0) || (positionedIndex < itemCount));
@@ -122,6 +123,8 @@ class PositionedList extends StatefulWidget {
   /// See [SliverChildBuilderDelegate.addAutomaticKeepAlives].
   final bool addAutomaticKeepAlives;
 
+  final bool shrinkWrap;
+
   @override
   State<StatefulWidget> createState() => _PositionedListState();
 }
@@ -169,6 +172,7 @@ class _PositionedListState extends State<PositionedList> {
           center: _centerKey,
           controller: scrollController,
           scrollDirection: widget.scrollDirection,
+          shrinkWrap: widget.shrinkWrap,
           reverse: widget.reverse,
           cacheExtent: widget.cacheExtent,
           physics: widget.physics,
@@ -306,22 +310,35 @@ class _PositionedListState extends State<PositionedList> {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (registeredElements.value == null) return;
         final positions = <ItemPosition>[];
-        RenderViewport viewport;
+
+        var viewport;
         for (var element in registeredElements.value) {
           final RenderBox box = element.renderObject;
           viewport ??= RenderAbstractViewport.of(box);
           final ValueKey<int> key = element.widget.key;
           if (widget.scrollDirection == Axis.vertical) {
-            final reveal = viewport.getOffsetToReveal(box, 0).offset;
-            final itemOffset = reveal -
-                viewport.offset.pixels +
-                viewport.anchor * viewport.size.height;
-            positions.add(ItemPosition(
-                index: key.value,
-                itemLeadingEdge: itemOffset.round() /
-                    scrollController.position.viewportDimension,
-                itemTrailingEdge: (itemOffset + box.size.height).round() /
-                    scrollController.position.viewportDimension));
+            if (widget.shrinkWrap) {
+              final reveal = viewport.getOffsetToReveal(box, 0.0).offset;
+              final itemOffset =
+                  reveal - viewport.offset.pixels + 0.0 * viewport.size.height;
+              positions.add(ItemPosition(
+                  index: key.value,
+                  itemLeadingEdge: itemOffset.round() /
+                      scrollController.position.viewportDimension,
+                  itemTrailingEdge: (itemOffset + box.size.height).round() /
+                      scrollController.position.viewportDimension));
+            } else {
+              final reveal = viewport.getOffsetToReveal(box, 0.0).offset;
+              final itemOffset = reveal -
+                  viewport.offset.pixels +
+                  viewport.anchor * viewport.size.height;
+              positions.add(ItemPosition(
+                  index: key.value,
+                  itemLeadingEdge: itemOffset.round() /
+                      scrollController.position.viewportDimension,
+                  itemTrailingEdge: (itemOffset + box.size.height).round() /
+                      scrollController.position.viewportDimension));
+            }
           } else {
             final itemOffset =
                 box.localToGlobal(Offset.zero, ancestor: viewport).dx;
